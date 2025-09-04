@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tasks Dashboard • API 3333</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: #151c2f;
+        --muted: #9aa4b2;
+        --text: #e7edf5;
+        --brand: #00d084;
+        --brand2: #22c55e;
+        --danger: #ef4444;
+        --warn: #f59e0b;
+        --border: #24304a;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #0b1220, #0d1630);
+        color: var(--text);
+        font: 500 16px/1.35 Inter, system-ui, -apple-system, Segoe UI, Roboto,
+          Arial, sans-serif;
+      }
+      .container {
+        max-width: 1050px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 16px 18px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 14px;
+        backdrop-filter: blur(8px);
+        z-index: 5;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--warn);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+      }
+      .dot.ok {
+        background: var(--brand2);
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: #0f172a;
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+        box-shadow: var(--shadow);
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        border-color: #334155;
+      }
+      .btn.primary {
+        background: linear-gradient(90deg, var(--brand), var(--brand2));
+        color: #04210e;
+        border: 0;
+        font-weight: 700;
+      }
+      .btn.ghost {
+        background: transparent;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 16px;
+        margin-top: 18px;
+      }
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: linear-gradient(180deg, #0f172a, #0e1728);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+      }
+      .h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .muted {
+        color: var(--muted);
+        font-weight: 400;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      input[type="text"] {
+        width: 100%;
+        background: #0b1324;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        padding: 12px 14px;
+        outline: none;
+        transition: 0.2s;
+      }
+      input[type="text"]:focus {
+        border-color: #334155;
+        box-shadow: 0 0 0 4px rgba(51, 65, 85, 0.25);
+      }
+      .pill {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 8px 12px;
+      }
+      .list {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .item {
+        display: grid;
+        grid-template-columns: 28px 1fr 120px 120px;
+        gap: 12px;
+        align-items: center;
+        background: #0b1324;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px 14px;
+      }
+      .name[contenteditable] {
+        outline: 2px dashed transparent;
+        border-radius: 8px;
+      }
+      .name[contenteditable]:focus {
+        outline-color: #334155;
+        background: #0f172a;
+      }
+      .badge {
+        padding: 6px 8px;
+        border-radius: 10px;
+        font-size: 12px;
+        border: 1px solid var(--border);
+        text-align: center;
+      }
+      .badge.ok {
+        background: rgba(34, 197, 94, 0.12);
+        border-color: rgba(34, 197, 94, 0.35);
+        color: #bbf7d0;
+      }
+      .badge.no {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.35);
+        color: #fecaca;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      .danger {
+        color: #fecaca;
+        border-color: rgba(239, 68, 68, 0.35);
+        background: rgba(239, 68, 68, 0.12);
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 50;
+      }
+      .toast .t {
+        background: #0b1324;
+        border: 1px solid var(--border);
+        border-left: 6px solid var(--brand2);
+        padding: 10px 12px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+      .toast .err {
+        border-left-color: var(--danger);
+      }
+      small {
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <div class="brand">
+          <div id="healthDot" class="dot" title="Health"></div>
+          <div>
+            <strong>Tasks Dashboard</strong><br />
+            <small>API <code>http://localhost:3333</code></small>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn ghost" id="refreshBtn">↻ Atualizar</button>
+          <button class="btn primary" id="newBtn">+ Nova tarefa</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="card">
+          <div class="h">
+            <h3 style="margin: 0">Tarefas</h3>
+            <div class="toolbar">
+              <span class="pill"
+                ><input type="radio" name="f" id="f-all" checked />
+                <label for="f-all">Todas</label></span
+              >
+              <span class="pill"
+                ><input type="radio" name="f" id="f-open" />
+                <label for="f-open">A fazer</label></span
+              >
+              <span class="pill"
+                ><input type="radio" name="f" id="f-done" />
+                <label for="f-done">Concluídas</label></span
+              >
+            </div>
+          </div>
+
+          <div class="row" style="margin: 8px 0 12px">
+            <input id="search" type="text" placeholder="Filtrar por nome..." />
+            <small id="counter" class="muted">0 tarefas</small>
+          </div>
+
+          <div id="list" class="list"></div>
+        </section>
+
+        <aside class="card">
+          <div class="h">
+            <h3 style="margin: 0">Nova tarefa</h3>
+          </div>
+          <div class="row">
+            <input
+              id="nameInput"
+              type="text"
+              placeholder="Ex.: Estudar Cypress"
+            />
+            <span class="pill">
+              <input type="checkbox" id="doneInput" />
+              <label for="doneInput">Concluída?</label>
+            </span>
+            <button class="btn primary" id="addBtn">Adicionar</button>
+          </div>
+          <div style="margin-top: 10px">
+            <small class="muted"
+              >Dica: clique no nome de uma tarefa para editar; use o ✓ para
+              salvar ou a lixeira para excluir.</small
+            >
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const API = "http://localhost:3333";
+      const $ = (sel, root = document) => root.querySelector(sel);
+      const $$ = (sel, root = document) =>
+        Array.from(root.querySelectorAll(sel));
+      const toast = (msg, err = false) => {
+        const el = document.createElement("div");
+        el.className = "t" + (err ? " err" : "");
+        el.textContent = msg;
+        $("#toast").appendChild(el);
+        setTimeout(() => el.remove(), 2600);
+      };
+
+      async function api(path, opts = {}) {
+        const res = await fetch(API + path, {
+          headers: { "Content-Type": "application/json" },
+          ...opts,
+        });
+        const ct = res.headers.get("content-type") || "";
+        const data = ct.includes("application/json")
+          ? await res.json()
+          : await res.text();
+        return { ok: res.ok, status: res.status, data };
+      }
+
+      async function ping() {
+        const dot = $("#healthDot");
+        try {
+          const r = await api("/health");
+          dot.classList.toggle("ok", r.ok);
+          return r.ok;
+        } catch {
+          dot.classList.remove("ok");
+          return false;
+        }
+      }
+
+      let state = { tasks: [], filter: "all", q: "" };
+
+      function render() {
+        const list = $("#list");
+        list.innerHTML = "";
+        const q = state.q.trim().toLowerCase();
+        let items = state.tasks;
+        if (state.filter === "open") items = items.filter((t) => !t.is_done);
+        if (state.filter === "done") items = items.filter((t) => t.is_done);
+        if (q) items = items.filter((t) => t.name.toLowerCase().includes(q));
+
+        $("#counter").textContent = `${items.length} tarefa${
+          items.length !== 1 ? "s" : ""
+        }`;
+
+        if (!items.length) {
+          const empty = document.createElement("div");
+          empty.className = "item";
+          empty.innerHTML = `<div></div><div class="muted">Nada por aqui ainda.</div><div></div><div class="actions"><button class="btn" onclick="load()">Recarregar</button></div>`;
+          list.appendChild(empty);
+          return;
+        }
+
+        for (const t of items) {
+          const row = document.createElement("div");
+          row.className = "item";
+          row.innerHTML = `
+          <input type="checkbox" ${
+            t.is_done ? "checked" : ""
+          } aria-label="concluir">
+          <div class="name" contenteditable="true" spellcheck="false">${escapeHtml(
+            t.name
+          )}</div>
+          <div class="badge ${t.is_done ? "ok" : "no"}">${
+            t.is_done ? "Concluída" : "A fazer"
+          }</div>
+          <div class="actions">
+            <button class="btn" title="Salvar" aria-label="Salvar">✓</button>
+            <button class="btn danger" title="Excluir" aria-label="Excluir">🗑</button>
+          </div>
+        `;
+          const [cb, nameEl, badge, actions] = row.children;
+          cb.addEventListener("change", async () => {
+            const r = await api(`/tasks/${t.id}`, {
+              method: "PATCH",
+              body: JSON.stringify({ is_done: cb.checked }),
+            });
+            if (r.ok) {
+              t.is_done = r.data.is_done;
+              badge.textContent = t.is_done ? "Concluída" : "A fazer";
+              badge.className = "badge " + (t.is_done ? "ok" : "no");
+              toast("Status atualizado");
+            } else {
+              cb.checked = !cb.checked;
+              toast("Falha ao atualizar", true);
+            }
+          });
+          actions.children[0].addEventListener("click", async () => {
+            const newName = nameEl.textContent.trim();
+            if (!newName) {
+              toast("Nome não pode ser vazio", true);
+              nameEl.textContent = t.name;
+              return;
+            }
+            const r = await api(`/tasks/${t.id}`, {
+              method: "PUT",
+              body: JSON.stringify({ name: newName, is_done: t.is_done }),
+            });
+            if (r.ok) {
+              t.name = r.data.name;
+              toast("Salvo");
+            } else {
+              nameEl.textContent = t.name;
+              toast("Erro ao salvar", true);
+            }
+          });
+          actions.children[1].addEventListener("click", async () => {
+            if (!confirm("Remover esta tarefa?")) return;
+            const r = await api(`/tasks/${t.id}`, { method: "DELETE" });
+            if (r.status === 204) {
+              state.tasks = state.tasks.filter((x) => x.id !== t.id);
+              render();
+              toast("Removida");
+            } else toast("Erro ao remover", true);
+          });
+          list.appendChild(row);
+        }
+      }
+
+      function escapeHtml(s) {
+        return s.replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[m])
+        );
+      }
+
+      async function load() {
+        await ping();
+        const r = await api("/tasks");
+        if (r.ok) {
+          state.tasks = r.data;
+          render();
+        } else {
+          toast("Não foi possível carregar tarefas", true);
+        }
+      }
+
+      async function add() {
+        const name = $("#nameInput").value.trim();
+        const is_done = $("#doneInput").checked;
+        if (!name) {
+          toast("Informe um nome", true);
+          return;
+        }
+        const r = await api("/tasks", {
+          method: "POST",
+          body: JSON.stringify({ name, is_done }),
+        });
+        if (r.ok) {
+          state.tasks.unshift(r.data);
+          $("#nameInput").value = "";
+          $("#doneInput").checked = false;
+          render();
+          toast("Criada");
+        } else toast(r.data?.error || "Falha ao criar", true);
+      }
+
+      // events
+      $("#addBtn").addEventListener("click", add);
+      $("#newBtn").addEventListener("click", () => $("#nameInput").focus());
+      $("#refreshBtn").addEventListener("click", load);
+      $("#search").addEventListener("input", (e) => {
+        state.q = e.target.value;
+        render();
+      });
+      $("#f-all").addEventListener("change", () => {
+        state.filter = "all";
+        render();
+      });
+      $("#f-open").addEventListener("change", () => {
+        state.filter = "open";
+        render();
+      });
+      $("#f-done").addEventListener("change", () => {
+        state.filter = "done";
+        render();
+      });
+
+      // boot
+      load();
+    </script>
+  </body>
+</html>
